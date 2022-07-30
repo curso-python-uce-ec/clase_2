@@ -1,0 +1,2303 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "RKYM3Kl7mcaI"
+   },
+   "source": [
+    "# Clase 3\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "68anrzezmcaL"
+   },
+   "source": [
+    "# Literatura para la clase 3 opcional\n",
+    "* ## De [https://docs.python.org/3/tutorial/index.html](https://docs.python.org/3/tutorial/index.html) capítulos 4.6 y 4.7 hasta 4.7. 6 \n",
+    "* ### La guía de estilo oficial Pep 8 ([https://www.python.org/dev/peps/pep-0008/](https://www.python.org/dev/peps/pep-0008/ ))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "yrfSNSoymcaL"
+   },
+   "source": [
+    "# Programa para la clase 3\n",
+    "* ## Programa de ejemplo: La programación de la calculadora binaria contiene muchos de los temas que tratamos esta semana.\n",
+    "* ## Conceptos básicos\n",
+    "  * ### ¿Qué son las funciones?\n",
+    "  * ### ¿Por qué los usamos?\n",
+    "  * ### ¿Cómo escribimos una función?\n",
+    "  * ### ¿Cómo llamamos (ejecutamos) una función?\n",
+    "* ## Más cosas elegantes\n",
+    "  * ### Funciones sin nombre (funciones lambda)\n",
+    "  * ### Funciones que se llaman a sí mismas (programación recursiva)\n",
+    "  * ### Generador de funciones"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "MznDHiLUmcaM"
+   },
+   "source": [
+    "# Programa de ejemplo: La calculadora binaria\n",
+    "## Escribiremos una calculadora binaria, para exponentación, multiplicación, división, suma y resta de números binarios, de modo que, p. bincalc(\"10\",\"*\",\"11\") devuelve \"110\" y bincalc(\"10\",\"**\",\"1000\") devuelve \"1000000\"\n",
+    "## En el cuaderno de la clase 1 estudiaste la diferencia entre números binarios y decimales. Para comprender este ejemplo, debe comprender esta diferencia, por lo que, si es necesario, eche un vistazo a ese tema en el clase 1"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "UixwCWTdmcaM"
+   },
+   "source": [
+    "# Nuestro diseño de la calculadora binaria es muy simple:\n",
+    "## 1. Convierte los números binarios en números decimales\n",
+    "## 2. Aplicar la operación dada en los números decimales\n",
+    "## 3. Convierte el resultado decimal de nuevo en un número binario"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "b9vDneZBmcaM"
+   },
+   "source": [
+    "## Comenzamos escribiendo un multiplicador binario sin usar funciones todavía y que solo puede hacer multiplicaciones"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "G1fubpljmcaN"
+   },
+   "outputs": [],
+   "source": [
+    "binary_number_1 = '10'\n",
+    "binary_number_2 = '11'\n",
+    "\n",
+    "# convertir binary_number 1 a un entero decimal \n",
+    "result=0 \n",
+    "for power, digit in enumerate(reversed(binary_number_1), 0):\n",
+    "    contribution = digit * 2 ** power\n",
+    "    result += contribution\n",
+    "integer_number_1 = result    \n",
+    "\n",
+    "# convertir number2 a un entero decimal \n",
+    "result = 0\n",
+    "for power,digit in enumerate(reversed(binary_number_2), 0):\n",
+    "    contribution = digit * 2 ** power\n",
+    "    result += contribution\n",
+    "integer_number_2 = result    \n",
+    "\n",
+    "# multiplicar los decimales \n",
+    "integer_result = integer_number_1 * integer_number_2\n",
+    "\n",
+    "# convertir decimal a binario \n",
+    "result=''\n",
+    "while integer_result:\n",
+    "    next_binary_number=str(integer_result % 2)\n",
+    "    result = next_binary_number+result\n",
+    "    integer_result //= 2    \n",
+    "print (result or '0')      \n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "7S62uzJbmcaO",
+    "outputId": "53e2e0c3-88e7-4553-a6b7-8b340ff80ffe"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "10\n",
+      "0\n",
+      "5\n",
+      "1\n",
+      "2\n",
+      "0\n",
+      "1\n",
+      "1\n",
+      "1010\n"
+     ]
+    }
+   ],
+   "source": [
+    "integer_result = 10\n",
+    "result=''\n",
+    "while integer_result:\n",
+    "    print(integer_result)\n",
+    "    print(str(integer_result % 2))\n",
+    "    next_binary_number=str(integer_result % 2)\n",
+    "    result = next_binary_number+result\n",
+    "    integer_result //= 2    \n",
+    "print (result or '0')  "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "gf7s-E0qmcaP"
+   },
+   "source": [
+    "### Como tenemos el mismo código en dos lugares del programa, tendríamos que corregir el código en dos lugares.\n",
+    "### Entonces saquemos ese código y convirtámoslo en una función que solo tenemos que reparar una vez"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "xeOC4AI3mcaP",
+    "scrolled": true
+   },
+   "outputs": [],
+   "source": [
+    "def binary_to_integer(binary_number):\n",
+    "    result = 0\n",
+    "    for power,digit in enumerate(reversed(binary_number), 0):\n",
+    "        contribution = int(digit) * 2 ** power\n",
+    "        result += contribution\n",
+    "    return result\n",
+    "\n",
+    "# convertir binario  a decimales\n",
+    "integer_number_1 = binary_to_integer('10')    \n",
+    "integer_number_2 = binary_to_integer('11')    \n",
+    "\n",
+    "# multiplicar decimales\n",
+    "integer_result = integer_number_1*integer_number_2\n",
+    "\n",
+    "# convertir resultados a binarios \n",
+    "result = ''\n",
+    "while integer_result:\n",
+    "    next_binary_number = str(integer_result % 2)\n",
+    "    result = next_binary_number + result\n",
+    "    integer_result //= 2\n",
+    "print (result or '0')\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "FW4YhTD3mcaP"
+   },
+   "source": [
+    "### Esto ya es mucho mejor, pero podemos hacerlo mejor eliminando la conversión de números enteros a binarios en una función también.\n",
+    "### Esto escondería más complejidad. Los programadores pueden usar estas funciones sin tener que saber qué hay exactamente dentro de ellas. Los probamos a fondo y funciona correctamente para todos."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "XEi1NqcumcaQ"
+   },
+   "outputs": [],
+   "source": [
+    "def binary_to_integer(binary_number):\n",
+    "    result = 0\n",
+    "    for power, digit in enumerate(reversed(binary_number), 0):\n",
+    "        contribution = int(digit) * 2 ** power\n",
+    "        result += contribution\n",
+    "    return result    \n",
+    "\n",
+    "def integer_to_binary(number):\n",
+    "    result = ''\n",
+    "    while number:\n",
+    "        next_binary_number = str(number % 2)\n",
+    "        result=next_binary_number + result\n",
+    "        number //= 2\n",
+    "    return result or '0'    \n",
+    "\n",
+    "\n",
+    "integer_number_1 = binary_to_integer('10')    \n",
+    "integer_number_2 = binary_to_integer('11')    \n",
+    "\n",
+    "\n",
+    "integer_result = integer_number_1 * integer_number_2\n",
+    "\n",
+    "\n",
+    "result = integer_to_binary(integer_result)\n",
+    "print (result)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "XZw18kIVmcaQ"
+   },
+   "source": [
+    "### Para que el código sea aún más limpio, ahora ocultamos el resto de la complejidad dentro de una función de multiplicación y terminamos con el paso 1: escribir un multiplicador binario"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "T9LmTrY0mcaQ"
+   },
+   "outputs": [],
+   "source": [
+    "def binary_to_integer(binary_number):\n",
+    "    result = 0\n",
+    "    for power, digit in enumerate(reversed(binary_number), 0):\n",
+    "        contribution = int(digit) * 2 ** power\n",
+    "        result+=contribution\n",
+    "    return result    \n",
+    "\n",
+    "def integer_to_binary(number):\n",
+    "    result = ''\n",
+    "    while number:\n",
+    "        next_binary_number = str(number % 2)\n",
+    "        result = next_binary_number+result\n",
+    "        number //= 2\n",
+    "    return result or '0'   \n",
+    "\n",
+    "def binaire_multiplier(number_1, number_2):\n",
+    "    return integer_to_binary(binary_to_integer(number_1) * binary_to_integer(number_2))\n",
+    "\n",
+    "print (binaire_multiplier('101', '11'))\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "6BoB8JiEmcaR"
+   },
+   "source": [
+    "### Ahora generalizaremos nuestro multiplicador binario en una calculadora binaria completa\n",
+    "### Para este paso usamos el hecho de que en Python puedes tener funciones anónimas (Funciones sin nombre)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "ljJUoY9TmcaR"
+   },
+   "outputs": [],
+   "source": [
+    "def binary_to_integer(binary_number):\n",
+    "    result = 0\n",
+    "    for power, digit in enumerate(reversed(binary_number), 0):\n",
+    "        contribution = int(digit) * 2 ** power\n",
+    "        result += contribution\n",
+    "    return result    \n",
+    "\n",
+    "def integer_to_binary(number):\n",
+    "    result = ''\n",
+    "    while number:\n",
+    "        next_binary_number = str(number % 2)\n",
+    "        result = next_binary_number+result\n",
+    "        number //= 2\n",
+    "    return result or '0'    \n",
+    "\n",
+    "def binaire_calculator(number_1, operator, number_2):\n",
+    "    operations={'*'  : lambda x, y: x * y,\n",
+    "                '/'  : lambda x, y: x // y,    \n",
+    "                # We use the integer divison as working with floating binary numbers is a bit\n",
+    "                # complicated with binary numbers                \n",
+    "                '+'  : lambda x, y: x + y,\n",
+    "                '-'  : lambda x, y: x - y,\n",
+    "                '**' : lambda x, y: x ** y\n",
+    "               }\n",
+    "    \n",
+    "    function=operations[operator]\n",
+    "    \n",
+    "    return integer_to_binary(function(binary_to_integer(number_1), binary_to_integer(number_2)))\n",
+    "    \n",
+    "print (binaire_calculator('10', '*', '1010'))\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "xvubirtbmcaR"
+   },
+   "source": [
+    "## El programa anterior funciona muy bien, pero intente ingresar información incorrecta y Python se bloqueará, algo que no queremos. Por lo tanto, probaremos si la entrada para nuestras funciones es correcta"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "DLSd1HTomcaR"
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "irzL8TXmmcaS"
+   },
+   "outputs": [],
+   "source": [
+    "def binary_to_integer(binary_number):\n",
+    "    \n",
+    "    if not isinstance(binary_number, str):\n",
+    "        return None\n",
+    "    for digit in binary_number:\n",
+    "        if digit not in ['0', '1']:\n",
+    "            print (f\"binary_number={binary_number} not a binary number\")\n",
+    "            return None                                    \n",
+    "        \n",
+    "    result = 0\n",
+    "    for power,digit in enumerate(reversed(binary_number), 0):\n",
+    "        contribution = int(digit) * 2 ** power\n",
+    "        result += contribution\n",
+    "    return result    \n",
+    "\n",
+    "def integer_to_binary(number):\n",
+    "    if not isinstance(number, int):\n",
+    "    \n",
+    "        print (f\"number={number} not an integer\")\n",
+    "        return None\n",
+    "    result = ''\n",
+    "    while number:\n",
+    "        next_binary_number = str(number % 2)\n",
+    "        result=next_binary_number + result\n",
+    "        number //= 2\n",
+    "    return result or '0'    \n",
+    "\n",
+    "def binaire_calculator(number_1, operator, number_2):\n",
+    "    operations={'*'  : lambda x,y: x * y,\n",
+    "                '/'  : lambda x,y: x // y,\n",
+    "                '+'  : lambda x,y: x + y,\n",
+    "                '-'  : lambda x,y: x - y,\n",
+    "                '**' : pow\n",
+    "               }\n",
+    "    \n",
+    "    if operator not in operations:\n",
+    "        return None\n",
+    "    \n",
+    "    function = operations[operator]\n",
+    "    binnumber1 = binary_to_integer(number_1)\n",
+    "    if binnumber1 == None:\n",
+    "        return None\n",
+    "    \n",
+    "    binnumber2=binary_to_integer(number_2)\n",
+    "    if binnumber2 == None:\n",
+    "        return None\n",
+    "    \n",
+    "    integer_result = function(binary_to_integer(number_1),binary_to_integer(number_2))\n",
+    "    if integer_result == None:\n",
+    "        return None\n",
+    "    \n",
+    "    binresult = integer_to_binary(integer_result)\n",
+    "    \n",
+    "    return binresult\n",
+    "    \n",
+    "print (binaire_calculator('11', '**', '11'))\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "lELu5DaZmcaS"
+   },
+   "source": [
+    "### Este ya es un buen resultado, pero, por supuesto, siempre puedes mejorar el código, tal vez lees algo en Internet y piensas, aah, ese es un buen truco, quiero usarlo.\n",
+    "### Así que supongamos que leí en Internet que:\n",
+    "#### 1 intentar y excepto los bloques en python son una buena forma de lidiar con los errores\n",
+    "#### Con un try statement ejecuta el bloque de código después del intento y si hay un error, Python no se bloqueará, pero ejecuta el bloque de código siguiendo la declaración de except\n",
+    "#### 2 Python ya tiene funciones integradas que pueden hacer la conversión de binario "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "xsMTti0bmcaS",
+    "outputId": "6675054e-696e-4800-d001-38f55c5178be"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "5\n",
+      "5\n"
+     ]
+    }
+   ],
+   "source": [
+    "a = 0b101\n",
+    "print(a)\n",
+    "a = int('101',2)\n",
+    "print(a)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "LLkOxIFtmcaS"
+   },
+   "outputs": [],
+   "source": [
+    "def binary_to_integer(binary_number):\n",
+    "    try:\n",
+    "        return int(binary_number, 2)  \n",
+    "        # int convierte una cadena a un entero y con el segundo parámetro le indicas\n",
+    "         # la cadena contiene un número con base 2 (un número binario)\n",
+    "    except:\n",
+    "        raise Exception(f\"binary_number={binary_number} not a binary number\")\n",
+    "\n",
+    "\n",
+    "def integer_to_binary(number):\n",
+    "    try:             \n",
+    "        return str(bin(number))[2:]  # Debemos retirar los dos primeros caracteres del numero porque empizan con 0b\n",
+    "                                     \n",
+    "    except:\n",
+    "        raise Exception(f\"number={number} not an integer\") \n",
+    "        # Esta linea de cofigo solo se usara si es que hay un error \n",
+    "        \n",
+    "\n",
+    "\n",
+    "def binaire_calculator(number_1, operator, number_2):\n",
+    "    operations = {\n",
+    "        \"*\": lambda x, y: x * y,\n",
+    "        \"/\": lambda x, y: x // y,\n",
+    "        \"+\": lambda x, y: x + y,\n",
+    "        \"-\": lambda x, y: x - y,\n",
+    "        \"**\": pow,\n",
+    "    }\n",
+    "    try:\n",
+    "        return integer_to_binary(operations[operator](binary_to_integer(number_1), binary_to_integer(number_2)))\n",
+    "\n",
+    "\n",
+    "    except Exception as e:\n",
+    "        print(e)\n",
+    "\n",
+    "\n",
+    "print(binaire_calculator(\"111\",  \"+\", \"11\"))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "kIeRP0JnmcaT"
+   },
+   "source": [
+    "# Funciones, qué son y por qué las usamos\n",
+    "* ## Las funciones son bloques de código que se pueden usar repetidamente, por lo que, al igual que los bucles, son excelentes para la reutilización.\n",
+    "* ## La reutilización del código es importante\n",
+    " * ### La reutilización resulta en un mejor código: cuanto más a menudo se use su código (por usted mismo o por otras personas), antes se encontrarán (todos) los errores\n",
+    " * ### La reutilización es excelente para el mantenimiento, cuando, por ejemplo, el porcentaje utilizado en el cálculo del IVA está codificado en una función y cada programa que calcula el IVA utiliza esa función, solo hay un lugar donde debe cambiar ese porcentaje cuando la ley cambia\n",
+    "* ## Ya vio la reutilización en acción la semana pasada cuando usamos bucles for-loop y bucles while-loop para reutilizar código\n",
+    "* ## Las funciones son más flexibles que los bucles\n",
+    " * ### Las funciones se pueden reutilizar en varios lugares de un programa o en diferentes programas (a veces hay que importarlas)\n",
+    "* ## Otro tema importante en la programación es ocultar la complejidad para el usuario. Las funciones se pueden usar para ocultar la complejidad a los programadores. Es más fácil escribir software nuevo si solo tiene que combinar funciones para crear una nueva función. Por ejemplo, cuando queremos poner el valor binario de un número en la pantalla, no tenemos que saber cómo funciona la computadora, solo tenemos que leer la descripción de la función de impresión y bin y combinar la función de impresión y bin. , y funciona como en el siguiente programa"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "xW9BEuhomcaT"
+   },
+   "outputs": [],
+   "source": [
+    "# En las dos primeras declaraciones definimos una nueva función con la palabra clave def, y definimos un nombre de la función\n",
+    "# print_binary_representation, y defina que esta función necesita un parámetro, que se le dará el número de nombre dentro de la\n",
+    "# función\n",
+    "def print_binary_representation(number):\n",
+    "    print(bin(number))\n",
+    "    \n",
+    "# En esta declaración llamamos a la nueva función y le pasamos como argumento el número 10\n",
+    "# A este número se le dará el número de nombre dentro de la función\n",
+    "print_binary_representation(10)  "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "3nGKMiPBmcaT"
+   },
+   "source": [
+    "# ¿Cómo definimos una función?\n",
+    "## (Si encuentra esta parte y Cómo llamamos a una función demasiado complicada, primero comience con Ejemplos de definición y llamada de funciones y solo después de esos ejemplos intente comprender esta parte más teóricamente\n",
+    "## Sintaxis (la sintaxis es básicamente la gramática de un lenguaje informático, si no sigue la gramática, su programa no se ejecutará)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "zH0eOTDHmcaT"
+   },
+   "source": [
+    "```\n",
+    "def <nombre de la funcion>(<lista de parametros>): \n",
+    "    <declaracion>+\n",
+    "    <return declaracion>: \n",
+    "Si Python deja la función sin return Python devuelve una referencia None object\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "gOMIqufzmcaT"
+   },
+   "outputs": [],
+   "source": [
+    "# Definimos una función que verifica si el parámetro que le da la persona que llama es mayor que 67.\n",
+    "# Si es mayor o igual que 67 devuelve True, si es menor que 67 la función no cumplirá con una declaración de return y\n",
+    "# devolverá None\n",
+    "def age_test(age):\n",
+    "    if age >= 67: \n",
+    "        return True\n",
+    "\n",
+    "# En el siguiente código se llama a la función y se prueba si la función no terminó con una declaración return\n",
+    "# Sabemos que si se devuelve none, no se ejecutó una declaración de return y la edad era inferior a 67\n",
+    "age_applicant = 40 \n",
+    "if age_test(40) is None:\n",
+    "    pass\n",
+    "else:\n",
+    "    pass"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "r8OgKlNImcaU"
+   },
+   "source": [
+    "## Dos comentarios:\n",
+    "### Intente evitar devoluciones implícitas (usando devoluciones predeterminadas con None, no programado por ti). Dejar codigo sin completar no se considera una buena práctica. Intenta finalizar todas las direcciones posibles de su función con una declaración de return explícita. Puede usar return None, pero luego es explícito y no implícito\n",
+    "#### Durante la construcción de su software, la prueba de None puede ser útil para verificar si realmente ha cubierto todas las direcciones potenciales y para detectar errores, pero cuando su software esté terminado, estos retornos implícitos deberían desaparecer.\n",
+    "#### Esto es en realidad parte del zen de Python: en su película de instrucciones para pythonanywhere, Andras Kiss le mostró cómo encontrar el zen de Python en su pantalla (a través de importar esto), y esto es sobre la segunda línea: Explícito es mejor que implícito.\n",
+    "#### Aunque el Zen es bastante difícil de entender, échale un vistazo de vez en cuando: ¡Algún día lo entenderás!\n",
+    "# https://peps.python.org/pep-0020/"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/"
+    },
+    "executionInfo": {
+     "elapsed": 7,
+     "status": "ok",
+     "timestamp": 1657808657554,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "IhmkR9rFmcaU",
+    "outputId": "07092fad-03d2-406b-cc37-e4de90a65c97"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "The Zen of Python, by Tim Peters\n",
+      "\n",
+      "Beautiful is better than ugly.\n",
+      "Explicit is better than implicit.\n",
+      "Simple is better than complex.\n",
+      "Complex is better than complicated.\n",
+      "Flat is better than nested.\n",
+      "Sparse is better than dense.\n",
+      "Readability counts.\n",
+      "Special cases aren't special enough to break the rules.\n",
+      "Although practicality beats purity.\n",
+      "Errors should never pass silently.\n",
+      "Unless explicitly silenced.\n",
+      "In the face of ambiguity, refuse the temptation to guess.\n",
+      "There should be one-- and preferably only one --obvious way to do it.\n",
+      "Although that way may not be obvious at first unless you're Dutch.\n",
+      "Now is better than never.\n",
+      "Although never is often better than *right* now.\n",
+      "If the implementation is hard to explain, it's a bad idea.\n",
+      "If the implementation is easy to explain, it may be a good idea.\n",
+      "Namespaces are one honking great idea -- let's do more of those!\n"
+     ]
+    }
+   ],
+   "source": [
+    "# To get the Zen of Python\n",
+    "import this\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "0s5Dj_h1mcaU"
+   },
+   "source": [
+    "### El use del comando pass  marcador de posición y esto es comun. Cuando está construyendo su algoritmo y sabe que tiene que lidiar con un caso determinado en su programa pero aún no sabe cómo va a manejar el caso, el comando pass hace posible programar la estructura de su programa sin los detalles más exactos. Además, los comandos pass le recordarán que aún debe ingresar un código adicional"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "dOyziuTfmcaU"
+   },
+   "source": [
+    "# ¿Cómo llamamos a una función?\n",
+    "## Sintaxis\n",
+    "### ¡NOTA! Cuando defines una función, tienes entre paréntesis una lista de parámetros, cuando llamas a una función, tienes entre paréntesis una lista de argumentos. Los parámetros son nombres que se asignarán a los argumentos que son objetos."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "5AFtDkQKmcaV"
+   },
+   "source": [
+    "# Ejemplos de funciones de definición y llamada"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "6bVQxrbUmcaV"
+   },
+   "source": [
+    "\n",
+    "### Los conceptos básicos no son complicados.\n",
+    "\n",
+    "\n",
+    "### Tú defines una función. La definición de la función le dice a Python qué hacer, cuando se llama a la función\n",
+    "### Definir una función es simple, usa la palabra clave def, da el nombre de la función, entre parentesis da una lista de parámetros de los nombres de los objetos que la función necesita para funcionar correctamente\n",
+    "### Con indentacion debajo de la palabra clave def, escribe el código que le dice a Python qué hacer con la entrada en la lista de parámetros\n",
+    "### La función se llama por el nombre de una función, y entre paréntesis la lista de argumentos de los objetos que se pasarán a la función\n",
+    "### Python asignará los nombres en la lista de parámetros a los objetos en la lista de argumentos (básicamente de izquierda a derecha, y ejecutará la función de acuerdo con la definición de la función\n",
+    "### Después de que Python haya ejecutado la función, devolverá el valor dado en una declaración de devolución a la persona que llama a la función y, si no hay una declaración de devolución, un objeto None"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "01ichmSemcaV"
+   },
+   "outputs": [],
+   "source": [
+    "def function_1(b):\n",
+    "    b += 1\n",
+    "    print(b)\n",
+    "\n",
+    "a = 1\n",
+    "function_1(a)\n",
+    "print(a)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "EPktt0iYmcaV"
+   },
+   "outputs": [],
+   "source": [
+    "def function_1(a):\n",
+    "    a += 1\n",
+    "    print(a)\n",
+    "\n",
+    "a = 1\n",
+    "function_1(a)\n",
+    "print(a)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "-PjxM1wUmcaV"
+   },
+   "source": [
+    "## Pasar argumentos a funciones, funciona diferente con objetos mutables\n",
+    "## En el siguiente ejemplo, verá antes de la llamada el nombre 'a' asignado a/vinculado a un objeto de lista mutable con valor [1,2]\n",
+    "## Al llamar a la función con function_1(a), el objeto se pasa a la función y obtiene el nombre 'a' de la lista de parámetros, que se le asigna dentro de la función\n",
+    "## Si ejecuta el programa, parece que todas las a son iguales\n",
+    "## Todavía es bastante revelador usar el nombre function_1.a para la 'a' dentro de la función y usar el nombre global.a para la 'a' fuera de la función\n",
+    "## Pasar el argumento dentro de la función funciona como la instrucción de asignación\n",
+    "## función_1.a = global.a\n",
+    "## Ambos nombres ahora se referirán al mismo objeto\n",
+    "## Debido a que este es un objeto mutable, a[0] = 2 no crea un nuevo objeto con valor [2,2] y function_1.a aún se refiere al objeto antiguo con valor [2,2] y global.a también todavía se refiere al objeto antiguo que ahora tiene valor [2, 2]\n",
+    "## Si usa function_1.a, global.a, y recuerda que el paso de la función funciona como function_1.a = global.a, puede aplicar todo lo que aprendió sobre la declaración de asignación en la clase 1"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/"
+    },
+    "executionInfo": {
+     "elapsed": 216,
+     "status": "ok",
+     "timestamp": 1657808925564,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "GOIVbGkVmcaV",
+    "outputId": "6dc255eb-74c6-4e44-862c-0f4469291479"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[2, 2]\n",
+      "[2, 2]\n"
+     ]
+    }
+   ],
+   "source": [
+    "def function_1(a):\n",
+    "    a[0] = 2\n",
+    "    print(a)\n",
+    "\n",
+    "a = [1, 2]\n",
+    "function_1(a)\n",
+    "print(a)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "lpqhNGWZmcaV"
+   },
+   "source": [
+    "### Si desea utilizar global.a dentro de una función, puede hacerlo con la ayuda del comando global. En el siguiente ejemplo, antes de la llamada, verá que un objeto inmutable con valor 1 tiene el nombre 'a', y en realidad es global.a. Para usar global.a puede usar la declaración global como en el siguiente ejemplo. La a dentro de la función ahora se refiere a global.a"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/"
+    },
+    "executionInfo": {
+     "elapsed": 6,
+     "status": "ok",
+     "timestamp": 1657808925799,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "HF6xxVq0mcaW",
+    "outputId": "1a9aa7e3-a883-42c0-caeb-1731de289b53"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "2\n",
+      "2\n"
+     ]
+    }
+   ],
+   "source": [
+    "def function_1():\n",
+    "    global a\n",
+    "    a += 1\n",
+    "    print(a)\n",
+    "\n",
+    "a = 1\n",
+    "function_1()\n",
+    "print(a)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "uBOtW-WJmcaW"
+   },
+   "source": [
+    "### Un ejemplo de como usar varios parametros "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/"
+    },
+    "executionInfo": {
+     "elapsed": 5,
+     "status": "ok",
+     "timestamp": 1657808925800,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "U4iHcKdXmcaW",
+    "outputId": "63544c16-e855-4d44-ddde-0c01e66ebb06"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "1 2 3 4\n",
+      "10\n"
+     ]
+    }
+   ],
+   "source": [
+    "def adder(a, b, c, d):\n",
+    "    print(a, b, c, d)\n",
+    "    return a + b + c + d\n",
+    "\n",
+    "print(adder(1, 2, 3, 4))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "JbeuKGZjmcaW"
+   },
+   "source": [
+    "### Puede definir algunos valores predeterminados para sus parámetros.\n",
+    "### Estos parámetros predeterminados deben estar al final de la lista de parámetros. Digamos que queremos dar a los parámetros b y d un valor predeterminado de 5."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "mdEkADuGmcaW"
+   },
+   "source": [
+    "### Por ejemplo  "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/"
+    },
+    "executionInfo": {
+     "elapsed": 4,
+     "status": "ok",
+     "timestamp": 1657808925800,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "GHMlARCSmcaW",
+    "outputId": "4e36a4f5-4bde-4689-98e3-52e9afa488f6"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "1 3 2 5\n",
+      "11\n"
+     ]
+    }
+   ],
+   "source": [
+    "def adder(a, c, b=5, d=5):\n",
+    "    print(a, b, c, d)\n",
+    "    return a + b + c + d\n",
+    "\n",
+    "print(adder(1, 2, 3))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "8VYUT1-dmcaW"
+   },
+   "source": [
+    "### Esto no esta bien   "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 131
+    },
+    "executionInfo": {
+     "elapsed": 21,
+     "status": "error",
+     "timestamp": 1657808926360,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "SzN2mL2dmcaW",
+    "outputId": "53382261-165d-4714-ad68-5ca02504a08c"
+   },
+   "outputs": [
+    {
+     "ename": "SyntaxError",
+     "evalue": "ignored",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;36m  File \u001b[0;32m\"<ipython-input-6-5b69e15a2a0a>\"\u001b[0;36m, line \u001b[0;32m1\u001b[0m\n\u001b[0;31m    def adder(a, b=5, c, d=5):\u001b[0m\n\u001b[0m             ^\u001b[0m\n\u001b[0;31mSyntaxError\u001b[0m\u001b[0;31m:\u001b[0m non-default argument follows default argument\n"
+     ]
+    }
+   ],
+   "source": [
+    "def adder(a, b=5, c, d=5):\n",
+    "    print(a, b, c, d)\n",
+    "    return a + b + c + d\n",
+    "\n",
+    "print(adder(1, 2, 3))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "lKPXxnw_mcaX"
+   },
+   "source": [
+    "### Puede hacer que la lista de argumentos posicionales sea variable, usando *args en la lista de parámetros. En realidad, podría usar *cualquier_nombre, pero usar *args es común\n",
+    "### *args debe estar después de los parámetros sin un valor predeterminado"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "sm1I8aQQmcaX"
+   },
+   "source": [
+    "### Esto esta bien"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "executionInfo": {
+     "elapsed": 9,
+     "status": "aborted",
+     "timestamp": 1657808926351,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "opvE0SM1mcaX"
+   },
+   "outputs": [],
+   "source": [
+    "def adder(a, b, *args):\n",
+    "    print(a, b, args)\n",
+    "    result = 0\n",
+    "    for element in args:\n",
+    "        result += element\n",
+    "    return a + b + result\n",
+    "\n",
+    "print(adder(1, 2, 3, 4, 5))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "Ol-AG6YLmcaX"
+   },
+   "source": [
+    "### Esto no?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "executionInfo": {
+     "elapsed": 10,
+     "status": "aborted",
+     "timestamp": 1657808926352,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "2Nkg2HijmcaX"
+   },
+   "outputs": [],
+   "source": [
+    "def adder(*args, d, e):\n",
+    "    print(args, d, e)\n",
+    "    result = 0\n",
+    "    for element in args:\n",
+    "        result += element\n",
+    "    return result + d + e\n",
+    "\n",
+    "print(adder(1, 2, 3, 4, 5))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "ACHeltuwmcaX"
+   },
+   "source": [
+    "### Cuando llamas a una función, puedes usar argumentos de palabras clave\n",
+    "### Cada keyword utilizada en la lista de argumentos tiene que ser un nombre en la lista de parámetros\n",
+    "### Estos argumentos de keyword deben estar al final del argumento. Digamos que queremos pasar d y c por keyword"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "Oa6SoB5zmcaX"
+   },
+   "source": [
+    "### Esto esta bien "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "executionInfo": {
+     "elapsed": 12,
+     "status": "aborted",
+     "timestamp": 1657808926354,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "Lea_mz9zmcaX"
+   },
+   "outputs": [],
+   "source": [
+    "def adder(a, b, c, d):\n",
+    "    print(a, b, c, d)\n",
+    "    return a + b + c + d\n",
+    "\n",
+    "print(adder(1, 2, d=3, c=4))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "aF6yMOVXmcaX"
+   },
+   "source": [
+    "### Esto no"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "executionInfo": {
+     "elapsed": 12,
+     "status": "aborted",
+     "timestamp": 1657808926355,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "Q_4xXRUxmcaX"
+   },
+   "outputs": [],
+   "source": [
+    "def adder(a, b, c, d):\n",
+    "    print(a, b, c, d)\n",
+    "    return a + b + c + d\n",
+    "\n",
+    "print(adder(1, d=3, c=4, 2))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "PzUeg7RPmcaY"
+   },
+   "source": [
+    "### Puede hacer que la lista de argumentos de keywords sea variable usando \\*\\*kwargs en la lista de parámetros. En realidad podría usar \\*\\*cualquier nombre, pero usar \\*\\*kwargs es muy común (kw = palabra clave)\n",
+    "### \\*\\*kwargs tiene que ser el último elemento de la lista de parámetros"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "Gy3TU1htmcaY"
+   },
+   "source": [
+    "### Esto esta bien  "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "executionInfo": {
+     "elapsed": 13,
+     "status": "aborted",
+     "timestamp": 1657808926356,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "weeuTUHkmcaY"
+   },
+   "outputs": [],
+   "source": [
+    "def adder( a, b,**kwargs):\n",
+    "    print(kwargs)\n",
+    "    return  a + b + kwargs['c'] + kwargs['d']\n",
+    "\n",
+    "print(adder(a=1, b=2, d=3, c=4))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "6J06Qt8EmcaY"
+   },
+   "source": [
+    "### Esto no  "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "executionInfo": {
+     "elapsed": 14,
+     "status": "aborted",
+     "timestamp": 1657808926357,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "_hTk4gE6mcaY"
+   },
+   "outputs": [],
+   "source": [
+    "def adder(**kwargs, c, d):\n",
+    "    print(kwargs, c, d)\n",
+    "    return kwargs['a'] + kwargs['b'] + c + d\n",
+    "\n",
+    "print(adder(a=1, b=2, 3, 4))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "DQOoGJ0jmcaY"
+   },
+   "source": [
+    "### Cuando llamas a una función, también puedes usar el operador \\* y \\*\\* en la lista de argumentos\n",
+    "* #### \\* deshace una secuencia en una serie de argumentos posicionales\n",
+    "* #### \\*\\* deshace un diccionario en una serie de argumentos de keywords"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "executionInfo": {
+     "elapsed": 15,
+     "status": "aborted",
+     "timestamp": 1657808926358,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "avKQ1J42mcaY"
+   },
+   "outputs": [],
+   "source": [
+    "def adder(a, b, c, d):\n",
+    "    print(a, b, c, d)\n",
+    "    return a + b + c + d\n",
+    "\n",
+    "print(adder(*[1, 2, 3, 4]))\n",
+    "print(adder(**{'a':1, 'b':2, 'c':3, 'd':4}))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "ct6j3i7omcaY"
+   },
+   "source": [
+    "### Puedes usar * con un diccionario, pero al igual que cuando iteramos sobre un diccionario, lo que vimos la semana pasada, terminas desempaquetando una lista de keys. Si desea desempaquetar los valores, debe usar el método de values()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "executionInfo": {
+     "elapsed": 15,
+     "status": "aborted",
+     "timestamp": 1657808926359,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "K39V12nimcaY"
+   },
+   "outputs": [],
+   "source": [
+    "def adder(a, b, c, d):\n",
+    "    print(a, b, c, d)\n",
+    "    return a + b + c + d\n",
+    "\n",
+    "print(adder(*{'a':1, 'b':2, 'c':3, 'd':4}))\n",
+    "print(adder(*{'a':1, 'b':2, 'c':3, 'd':4}.values()))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "LPVRa917mcaZ"
+   },
+   "source": [
+    "### This is it basically all you need to know about arguments and parameters and what we expect you to know, but of course you can make your life extremely complicated  "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/"
+    },
+    "executionInfo": {
+     "elapsed": 463,
+     "status": "ok",
+     "timestamp": 1657812434272,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "Qwf4KwPpmcab",
+    "outputId": "d8b90d53-9303-4cd1-85ae-b774af24e614"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "1 2 2 5 (3,) {'g': 1}\n"
+     ]
+    }
+   ],
+   "source": [
+    "def function_1(a, b, c=1, *args, d=2, **kwargs):\n",
+    "    print (a,b,c,d,args,kwargs)\n",
+    "\n",
+    "function_1(1,2,2,3,g=1,d=5)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "8_7JvUbbmcab"
+   },
+   "source": [
+    "##  Funciones Lambda: las funciones en Python pueden ser anonimas, y para crearlas podemos usar una funcion lambda"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/"
+    },
+    "executionInfo": {
+     "elapsed": 3,
+     "status": "ok",
+     "timestamp": 1657812606578,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "udbA1cIQmcab",
+    "outputId": "6af08f6d-14ab-495b-aad1-124d929644d8"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "12\n"
+     ]
+    }
+   ],
+   "source": [
+    "result = (lambda x, y: x * y)(3, 4)\n",
+    "print(result)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "dM1DeVrlmcab"
+   },
+   "source": [
+    "### Exactamente como"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "F1OcjXQkmcac"
+   },
+   "outputs": [],
+   "source": [
+    "def multiply(x,y):\n",
+    "    return x * y\n",
+    "result = multiply(3,4)\n",
+    "print(result)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "3ymBJh4Imcac"
+   },
+   "source": [
+    "### Igual que\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "rpOS6nLrmcac"
+   },
+   "outputs": [],
+   "source": [
+    "multiply = lambda x, y: x * y\n",
+    "print(multiply(3, 4))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "qFDwP1QEmcac"
+   },
+   "source": [
+    "### Excepto en los últimos dos casos, se creó un nuevo nombre hay posibles conflictos con los nombres\n",
+    "### En realidad, la forma en que lo usamos en el ejemplo anterior es un poco no intuitiva y solo para mostrarle cómo funciona la creación de una función anónima."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "feCyni3Umcac"
+   },
+   "source": [
+    "#### Clasificación, si solo necesita ordenar una lista directamente, puede usar la función sorted, que crea una nueva lista"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/"
+    },
+    "executionInfo": {
+     "elapsed": 238,
+     "status": "ok",
+     "timestamp": 1657812870273,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "cG53e4qAmcac",
+    "outputId": "48bf04b3-0ac1-4212-9b9f-f115aef0bab6"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "140521552999040 ['John', 'Carla', 'andreas', 'zarah']\n",
+      "140521482557312 ['Carla', 'John', 'andreas', 'zarah']\n"
+     ]
+    }
+   ],
+   "source": [
+    "list_1 = [\"John\", \"Carla\", \"andreas\", \"zarah\"]\n",
+    "print(id(list_1), list_1)\n",
+    "list_1 = sorted(list_1)\n",
+    "print(id(list_1), list_1)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "9jz0KaTxmcac"
+   },
+   "source": [
+    "#### However if you want to sort a list with names [John, Carla, andreas, zarah], and you want them alfabetically sorted but you want to do that irrespective whether letters are capitalized or not. So you should get ['andreas', 'Carla', 'John', 'zarah']\n",
+    "#### What you can do is add a lambda function to the key argument of the sorted function. What happens is that sorted uses the result of the lambda function as the key to sort. In the following example we use the lower method to create a key that is the same independent of capitalisation. NB! name could have been any name and still the lambda function works"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/"
+    },
+    "executionInfo": {
+     "elapsed": 211,
+     "status": "ok",
+     "timestamp": 1657813592540,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "69TOVDEtWm7T",
+    "outputId": "c814525e-1f36-4702-8880-0cef2ad4c9a7"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "['Carla', 'zarah', 'andreas', 'John']\n"
+     ]
+    }
+   ],
+   "source": [
+    "def prueba(nombre):\n",
+    "    return nombre[1]\n",
+    "\n",
+    "mylist = [\"John\", \"Carla\", \"andreas\", \"zarah\"]\n",
+    "mylist = sorted(mylist,key=prueba)\n",
+    "print(mylist)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "HwfHlK-Amcac"
+   },
+   "outputs": [],
+   "source": [
+    "mylist = [\"John\", \"Carla\", \"andreas\", \"zarah\"]\n",
+    "mylist = sorted(mylist, key=lambda name: name.lower())\n",
+    "print(mylist)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "ZtTTn0Y-mcac"
+   },
+   "source": [
+    "### Las funciones en Python son objetos como todo lo demás en Python, por lo que las funciones pueden devolver otras funciones"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "TdjlHM7pmcac"
+   },
+   "source": [
+    "#### Un ejemplo es la aplicación de función parcial, un buen truco. Escribes una función que genera una nueva función donde uno o más de los parámetros son fijos. Entonces, si desea una función que duplique números, basa la función doble en una función de multiplicación más general donde uno de los operandos se está arreglando. Funcion anidada o interna, nested function"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "x2RzpX_gmcad"
+   },
+   "outputs": [],
+   "source": [
+    "def multiplication_generator(second_operand):\n",
+    "    def multiply(first_operand):\n",
+    "        return first_operand * second_operand\n",
+    "    return multiply\n",
+    "\n",
+    "doubler = multiplication_generator(2)\n",
+    "print(doubler(4))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "iNVsXkbomcad"
+   },
+   "source": [
+    "#### Como la función multiplicar no se llamará (e incluso no se puede) desde fuera del multiplication_generator, tiene sentido usar una función anónima en este caso"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "TGpUTNqtmcad"
+   },
+   "outputs": [],
+   "source": [
+    "def multiplication_generator(second_operand):\n",
+    "    return lambda first_operand: second_operand * first_operand\n",
+    "\n",
+    "doubler = multiplication_generator(2)\n",
+    "print(doubler(4))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "V24S5ooKmcad"
+   },
+   "source": [
+    "### Para entender porque la funcion de multiplicacion creado dentro de la funcion no puede ser ejecutada afuera de la funcion miremos este ejemplo"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "b5P1U84Gmcad"
+   },
+   "source": [
+    "### Dos ejemplos"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/"
+    },
+    "executionInfo": {
+     "elapsed": 272,
+     "status": "ok",
+     "timestamp": 1657813941053,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "e5MKi-Snmcad",
+    "outputId": "e02c3174-ec21-4c0c-ae85-618575ab8874"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "2\n",
+      "1\n"
+     ]
+    }
+   ],
+   "source": [
+    "def function(a):\n",
+    "    a=2\n",
+    "    print(a)\n",
+    "\n",
+    "a=1\n",
+    "function(a)\n",
+    "print(a)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 218
+    },
+    "executionInfo": {
+     "elapsed": 240,
+     "status": "error",
+     "timestamp": 1657813942436,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "WPMak_bgmcad",
+    "outputId": "15202f55-05c2-498f-a4ce-7c7902299761"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "2\n"
+     ]
+    },
+    {
+     "ename": "NameError",
+     "evalue": "ignored",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-17-f3fb43ca814d>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m()\u001b[0m\n\u001b[1;32m      5\u001b[0m \u001b[0ma\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;36m1\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m \u001b[0mfunction\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0ma\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mb\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m: name 'b' is not defined"
+     ]
+    }
+   ],
+   "source": [
+    "def function(a):\n",
+    "    b=2\n",
+    "    print(b)\n",
+    "\n",
+    "a=1\n",
+    "function(a)\n",
+    "print(b)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "xGCmJ1qmmcad"
+   },
+   "source": [
+    "## recursión"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "7GSoGfzLmcad"
+   },
+   "source": [
+    "### La recursividad es realmente un buen truco, que puede hacer maravillas. Un ejemplo muy usado son los números de fibonacci\n",
+    "### Para escribir una sucesión de Fibonacci necesitas dos reglas:\n",
+    "### 1 Por dónde empezar, a menudo se empieza con 1 y 1\n",
+    "### 2 Para una secuencia necesitas una regla para generar el siguiente número: para fibonacci es que cada número de fibonacci (excepto los primeros 2) son la suma de los dos números anteriores en la secuencia\n",
+    "### Entonces la secuencia se convierte en: 1, 1, 2, 3, 5, 8, ...\n",
+    "### La belleza de la programación recursiva es que escribes estas dos cosas en tu código sin pensar mucho y tienes tu programa"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/"
+    },
+    "executionInfo": {
+     "elapsed": 1438,
+     "status": "ok",
+     "timestamp": 1657814146323,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "TiW5RiEqmcad",
+    "outputId": "3b12fa5a-c2b5-4886-e4ee-1e49c80cfab7"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "1\n",
+      "2\n",
+      "8\n"
+     ]
+    }
+   ],
+   "source": [
+    "def fib(index):\n",
+    "    # regla 1 \n",
+    "    if index in (1, 2):\n",
+    "        return 1\n",
+    "    # else regla 2\n",
+    "    else:\n",
+    "        return fib(index - 1) + fib(index - 2)\n",
+    "print(fib(1))\n",
+    "print(fib(3))\n",
+    "print(fib(6))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "PmK_-0Ramcae"
+   },
+   "source": [
+    "### El programa esta bien hecho, sin embargo, hay un problema con la programación recursiva, Python tiene que mantener muchas copias de la función en la memoria. Por ejemplo, si calcula fib (5), básicamente le dice a Python:\n",
+    "``` python\n",
+    "fib(5) = fib(4) + fib(3)\n",
+    "fib(5) = (fib(3) + fib(2)) + (fib(2) + fib(1))\n",
+    "```\n",
+    "Y verá dos cosas: muchas funciones se mantendrán en la memoria y muchos de los mismos cálculos se realizarán varias veces. Entonces, si desea el número de Fibonacci número 100, se encontrará con una desagradable sorpresa (guarde su cuaderno antes de ejecutar el siguiente código)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 329
+    },
+    "executionInfo": {
+     "elapsed": 25344,
+     "status": "error",
+     "timestamp": 1657814601447,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "IASyj0Y2mcae",
+    "outputId": "0f876438-49f5-4c76-d831-c53d0c255ff7"
+   },
+   "outputs": [
+    {
+     "ename": "KeyboardInterrupt",
+     "evalue": "ignored",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mKeyboardInterrupt\u001b[0m                         Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m()\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      7\u001b[0m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 8\u001b[0;31m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m<ipython-input-19-d824536287c7>\u001b[0m in \u001b[0;36mfib\u001b[0;34m(index)\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0;31m# else apply rule 2\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m     \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 7\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mindex\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0;36m2\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      8\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfib\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m100\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mKeyboardInterrupt\u001b[0m: "
+     ]
+    }
+   ],
+   "source": [
+    "def fib (index):\n",
+    "    # rule 1 \n",
+    "    if index in (1, 2):\n",
+    "        return 1\n",
+    "    # else apply rule 2\n",
+    "    else:\n",
+    "        return fib(index - 1) + fib(index - 2)\n",
+    "print(fib(100))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "FV_8fhyOmcae"
+   },
+   "source": [
+    "### Probablemente se habrá quedado sin memoria o el programa tomó mucho tiempo\n",
+    "### Para evitar esto aplicamos una técnica llamada memoización: cuando hemos calculado un número de fibonacci almacenamos el resultado en un diccionario y antes de calcular nada comprobamos si el resultado ya está en el diccionario"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/"
+    },
+    "executionInfo": {
+     "elapsed": 200,
+     "status": "ok",
+     "timestamp": 1657814721201,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "BL-wRdDwmcae",
+    "outputId": "a20e379a-2dfc-4c3d-8e18-1549f77c6d2e"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "1\n",
+      "2\n",
+      "16\n",
+      "316912650057057350374175801344\n",
+      "2678771517965668302371062622650004526403512029263834018609375970925877627812340306232995947039239645318986682293882867062967863214230785108996144393674643700983641943706057746355268651265592785469488545538261618745895485316849691889791385986519265728642799119421635541915107457913156096709301417017344\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Sabemos los dos primero numeros\n",
+    "fib_numbers={1:1,2:1}\n",
+    "def fib(index):\n",
+    "    #Python asume que trabajamos con keys\n",
+    "    if index not in fib_numbers:\n",
+    "        # Actualizamos el dict\n",
+    "        fib_numbers[index] = fib (index - 1) + fib(index - 1)\n",
+    "    # El resultado sera el numero correcto\n",
+    "    return fib_numbers[index]\n",
+    "print(fib(1))\n",
+    "print(fib(3))\n",
+    "print(fib(6))\n",
+    "print(fib(100))\n",
+    "print(fib(1000))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "m3x45AO3mcae"
+   },
+   "source": [
+    "### La programación recursiva es intelectualmente muy satisfactoria, pero no siempre es la mejor opción, especialmente si puede obtener cadenas muy largas de llamadas, llamadas, etc."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "UeLwsES6mcae"
+   },
+   "source": [
+    "## Funciones generator"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "ZRaODXyymcae"
+   },
+   "source": [
+    "### Say you want the sum of all the integers from 1 to 100 milion|\n",
+    "### First try create a list with a normal function that uses the return statement\n",
+    "### Then use the built-in sum function\n",
+    "### If you changed something in the notebook you should save the notebook before you run the code\n",
+    "\n",
+    "### Digamos que quiere la suma de todos los números enteros del 1 al 100 millones|\n",
+    "### Primero intente crear una lista con una función normal que use la declaración return\n",
+    "### Luego usa la función de sum \n",
+    "### Si cambiaste algo en el cuaderno, debes guardar el cuaderno antes de ejecutar el código"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "n5wu6BP6mcae"
+   },
+   "outputs": [],
+   "source": [
+    "def create_integer_list (max_value):\n",
+    "    i = 1\n",
+    "    list_1 = []\n",
+    "    while i < max_value:\n",
+    "        list_1.append(i)\n",
+    "        i += 1\n",
+    "    return list_1    \n",
+    "\n",
+    "print(sum(create_integer_list(10)))\n",
+    "print(sum(create_integer_list(int(1e8))))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "5h6A473-mcae"
+   },
+   "source": [
+    "### Ahora usaremos yield para crear una  funcion generator \n",
+    "### La gran diferencia es que ahora la función devolverá los valores uno por uno e hibernará en el medio, por lo que Python recordará exactamente cuál es el estado de la función\n",
+    "### Las funciones normales cuando se llaman se destruyen después de la ejecución y la próxima llamada comienzan de nuevo\n",
+    "### Yield no guarda todos los valores que estan siendo creados, solo los ultimos y de esta forma no colapsamos la memoria\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 340
+    },
+    "executionInfo": {
+     "elapsed": 4434,
+     "status": "error",
+     "timestamp": 1657815168523,
+     "user": {
+      "displayName": "Victor Salazar",
+      "userId": "01748899183064234735"
+     },
+     "user_tz": -120
+    },
+    "id": "WXl6g2gQmcae",
+    "outputId": "a0ad1a62-3dcf-4937-fc5a-24d38015d39a"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "45\n"
+     ]
+    },
+    {
+     "ename": "KeyboardInterrupt",
+     "evalue": "ignored",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mKeyboardInterrupt\u001b[0m                         Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-21-1f2741f52036>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m()\u001b[0m\n\u001b[1;32m      6\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      7\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0msum\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mcreate_integer_list\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m10\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 8\u001b[0;31m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0msum\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mcreate_integer_list\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m1e8\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;32m<ipython-input-21-1f2741f52036>\u001b[0m in \u001b[0;36mcreate_integer_list\u001b[0;34m(max_value)\u001b[0m\n\u001b[1;32m      2\u001b[0m     \u001b[0mi\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      3\u001b[0m     \u001b[0;32mwhile\u001b[0m \u001b[0mi\u001b[0m \u001b[0;34m<\u001b[0m \u001b[0mmax_value\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 4\u001b[0;31m         \u001b[0;32myield\u001b[0m \u001b[0mi\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      5\u001b[0m         \u001b[0mi\u001b[0m \u001b[0;34m+=\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mKeyboardInterrupt\u001b[0m: "
+     ]
+    }
+   ],
+   "source": [
+    "def create_integer_list (max_value):\n",
+    "    i = 1\n",
+    "    while i < max_value:\n",
+    "        yield i\n",
+    "        i += 1\n",
+    "\n",
+    "print(sum(create_integer_list(10)))\n",
+    "print(sum(create_integer_list(int(1e8))))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "7WncEam5mcaf"
+   },
+   "source": [
+    "### Range hace lo mismo"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "WxlkI9Odmcaf"
+   },
+   "outputs": [],
+   "source": [
+    "sum_of_integers = sum(range(1,int(1e8)))\n",
+    "print(sum_of_integers)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "XqYJ5uScmcaf"
+   },
+   "source": [
+    "# Preguntas"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "k3PoAz8Pmcaf"
+   },
+   "source": [
+    "## 1 Reescribe la siguiente función para que ya este tan fea.\n",
+    "### Aunque duele los ojos, funciona"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "z3FNSZNkmcaf"
+   },
+   "outputs": [],
+   "source": [
+    "def is_yes(text_1):\n",
+    "    return text_1 == 'yes' or text_1 == 'yeS' or text_1 == 'yEs' or text_1 == 'yES' or  text_1 == 'Yes' or text_1 == 'YeS' or text_1 == 'YEs' or text_1 == 'YES'\n",
+    "\n",
+    "print(is_yes('yEs'))\n",
+    "print(is_yes('no'))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "pNsAqKB8mcaf"
+   },
+   "source": [
+    "## 2 Escribe una función, como parámetro das un número entero, entre 0 y 1000, y la función le pedirá al usuario que adivine ese número. Si el usuario adivina demasiado, la función imprime \"To low\", si el usuario adivina demasiado, la función imprime \"To High\". Siempre que el usuario acierte, la función vuelve a pedir que se adivine, hasta que el usuario acierta y la función imprime \"Has acertado\" y se detiene."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "stpQ4wQtmcaf"
+   },
+   "source": [
+    "## 3 En Python, como en la mayoría de los otros lenguajes de programación, una declaración return solo puede devolver 1 valor. Pero, ¿por qué entonces funciona lo siguiente?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "AdCbPZa2mcaf"
+   },
+   "outputs": [],
+   "source": [
+    "def f(*args):\n",
+    "    first=args[0]\n",
+    "    second=args[1]\n",
+    "    return first, second\n",
+    "nr1, nr2=f(1,2)\n",
+    "print (f\"The first returned value was {nr1}, the second returned value was {nr2}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "eB9nda4Fmcaf"
+   },
+   "source": [
+    "## 4 Tiene una lista de tuplas, cada tupla con dos números enteros como [(3,1), (1,2), (1,1), (2,2)] y desea que la lista pasada se ordene primero de forma ascendente sobre el segundo elemento de la tupla y luego descendiendo sobre el primero, por lo que el resultado en este caso debería ser: [(3, 1), (1, 1), (2, 2), (1, 2)]. Escribe una función que cumpla con eso\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "Wsa9bLzDmcaf"
+   },
+   "source": [
+    "## 5 Digamos que desea ordenar una lista con números enteros como [8,1,3,2,15,7] de la siguiente manera. Desea primero los números pares, luego los números impares y dentro de cada grupo ordenados de menor a mayor. Entonces el resultado debería ser: [2, 8, 1, 3, 7, 15]\n",
+    "### Escribe dos funciones cada una de las cuales usa un parámetro\n",
+    "* ### En una función, ordena la lista completa, dividida en dos listas. Una lista con números pares y una lista con números impares, y únelas\n",
+    "* ### En la otra función, no dividas la lista, pero usa una función key dentro del comando sorted. La función key agrega a cada número impar el número más alto de la lista, por lo que las keys de clasificación para los números impares serán mayores que incluso el número par más alto. Es importante recordar que una función clave solo transforma los valores en la lista para el procedimiento de clasificación, pero no verá los valores transformados en la salida."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "Nexia9Ltmcag"
+   },
+   "source": [
+    "## 6 Vimos que puede usar la aplicación de función parcial usando funciones anónimas, demuestre que también se puede hacer con funciones con nombre reescribiendo el siguiente ejemplo:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "b6omRbKamcag"
+   },
+   "outputs": [],
+   "source": [
+    "def power_generator (second_number):\n",
+    "    return lambda first_number: first_number ** second_number \n",
+    "\n",
+    "cube = power_generator(3)\n",
+    "print (cube(3))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "Ax5EmB06mcag"
+   },
+   "source": [
+    "## 7 Ejecute el siguiente programa y explique los resultados"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "VUGvg8dmmcag"
+   },
+   "outputs": [],
+   "source": [
+    "def f(element, list_1=[]):\n",
+    "    print (id(list_1), list_1)\n",
+    "    list_1.append(element)\n",
+    "    return list_1\n",
+    "\n",
+    "print(f(1))\n",
+    "print(f(1))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "kvHsZ9Gemcag"
+   },
+   "source": [
+    "## 8 Escriba su propia calculadora binaria utilizando las funciones de conversión estándar de Python. Solo tienes que implementar la multiplicación y la suma. Sin embargo, en lugar de aceptar dos cadenas, debería aceptar una lista con al menos una cadena como parámetros.\n",
+    "## Ejemplos: bincalc('+',['1','11','101','10']) debería devolver '1011' y bincalc('*',['1','11',' 101','10']) debería devolver '11110'"
+   ]
+  }
+ ],
+ "metadata": {
+  "colab": {
+   "name": "Week 3.ipynb",
+   "provenance": []
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 1
+}
